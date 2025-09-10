@@ -1,9 +1,35 @@
 use anchor_lang::prelude::*;
 
+use crate::state::error::SOLAMMERROR;
+use crate::state::amm::AMMPool;
 use anchor_spl::token::{Mint, Token, TokenAccount};
-pub fn initialize_pool() -> Result<()> {
-    msg!("working frr");
+pub fn initialize_pool(ctx:Context<InitPool>) -> Result<()> {
+
+   require!(
+        ctx.accounts.token_a_mint.key() != ctx.accounts.token_b_mint.key(),
+        SOLAMMERROR::SameTokenMint
+    );
+
+
+    let pool=&mut ctx.accounts.amm_pool;
+    pool.mint_a=ctx.accounts.token_a_mint.key();
+    pool.mint_b=ctx.accounts.token_b_mint.key();
+
+    pool.vault_a=ctx.accounts.vault_a.key();
+    pool.vault_b=ctx.accounts.vault_b.key();
+    pool.lp_mint=ctx.accounts.lp_token_mint.key();
+
+    pool.total_lp_issued=0;
+
+    pool.bump=ctx.bumps.amm_pool;
+    pool.pool_authority=ctx.accounts.authority.key();
+
     Ok(())
+
+
+  
+    
+
 }
 
 #[derive(Accounts)]
@@ -52,6 +78,18 @@ pub struct InitPool<'info> {
     pub lp_token_mint: Account<'info, Mint>,
 
 
+
+      #[account(
+        init,
+        payer = payer,
+        space = 8 + (32 * 6) + 16 + 1,
+        seeds = [b"pool",
+        token_a_mint.key().as_ref(),
+        token_b_mint.key().as_ref()],
+        bump)]
+    pub amm_pool: Account<'info, AMMPool>,
+
+
     pub system_program: Program<'info,System>,
     pub token_program:Program<'info,Token>
 
@@ -59,12 +97,4 @@ pub struct InitPool<'info> {
 
 }
 
-// required things
-// 1.payer
-// 2.pool_authority
-// 3.token_mint_a
-// 4.token_mint_b
-// 5.token_vault_a
-// 6.token_vault_b
-// 7.lp_mint
-// 8.amm_pool
+

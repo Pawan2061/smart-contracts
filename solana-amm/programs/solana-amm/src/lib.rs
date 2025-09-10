@@ -2,19 +2,17 @@ use anchor_lang::prelude::*;
 
 declare_id!("BvAYVdAqjoiS9zRawpc6dDktotk1NbRiT7QETT2xZVk9");
 
-pub mod instructions;
-pub mod state;
+mod instructions;
+mod state;
+use instructions::*;
 #[program]
 pub mod solana_amm {
+    // use crate::instructions::initialize_pool::InitPool;
+
     use super::*;
 
-    // pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-    //     msg!("Greetings from: {:?}", ctx.program_id);
-    //     Ok(())
-    // }
-
-    pub fn initialize_pool(ctx: Context<Initialize>) -> Result<()> {
-        msg!("Grettings");
+    pub fn initialize_pool(ctx: Context<InitPool>) -> Result<()> {
+        instructions::initialize_pool::initialize_pool(ctx);
         Ok(())
     }
 
