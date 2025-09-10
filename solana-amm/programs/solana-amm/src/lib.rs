@@ -2,6 +2,8 @@ use anchor_lang::prelude::*;
 
 declare_id!("BvAYVdAqjoiS9zRawpc6dDktotk1NbRiT7QETT2xZVk9");
 
+pub mod instructions;
+pub mod state;
 #[program]
 pub mod solana_amm {
     use super::*;
