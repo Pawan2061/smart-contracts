@@ -66,7 +66,11 @@ pub struct InitPool<'info> {
 
 
 
-      #[account(
+
+
+
+
+    #[account(
         init,
         payer = payer,
         seeds = [b"lp_mint", token_a_mint.key().as_ref(), token_b_mint.key().as_ref()],
