@@ -7,7 +7,6 @@ mod state;
 use instructions::*;
 #[program]
 pub mod solana_amm {
-    // use crate::instructions::initialize_pool::InitPool;
 
     use super::*;
 
@@ -16,8 +15,12 @@ pub mod solana_amm {
         Ok(())
     }
 
-    pub fn add_liquidity_tokens(ctx: Context<Initialize>) -> Result<()> {
-        msg!("working on adding liquidity tokens");
+    pub fn add_liquidity_tokens(
+        ctx: Context<AddTokenLiquity>,
+        quantity_a: u64,
+        quantity_b: u64,
+    ) -> Result<()> {
+        instructions::add_token_liquidity::add_token_liquidity(ctx, quantity_a, quantity_b);
         Ok(())
     }
     pub fn withdraw(ctx: Context<Initialize>) -> Result<()> {
