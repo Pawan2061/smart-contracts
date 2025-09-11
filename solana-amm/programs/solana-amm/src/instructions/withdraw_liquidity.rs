@@ -90,6 +90,8 @@ pub struct WithdrawLiquidity<'info> {
     pub token_mint_a: Account<'info, Mint>,
     pub token_mint_b: Account<'info, Mint>,
 
+    /// CHECK: This PDA is the pool authority. It is derived using seeds and bump,
+    /// so its address is deterministic and secure. No further runtime checks needed.
     #[account(
         seeds = [b"authority", token_mint_a.key().as_ref(), token_mint_b.key().as_ref()],
         bump

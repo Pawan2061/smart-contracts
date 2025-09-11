@@ -36,6 +36,11 @@ pub fn initialize_pool(ctx:Context<InitPool>) -> Result<()> {
 pub struct InitPool<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
+
+
+
+    /// CHECK: This PDA is the pool authority. It is derived using seeds and bump,
+/// so its address is deterministic and secure. No further runtime checks needed.
     #[account(seeds = [b"authority", token_a_mint.key().as_ref(), token_b_mint.key().as_ref()], bump)]
     pub authority: UncheckedAccount<'info>,
     #[account()]

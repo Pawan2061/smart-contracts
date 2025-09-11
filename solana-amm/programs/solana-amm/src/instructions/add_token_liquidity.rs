@@ -125,6 +125,10 @@ fn integer_sqrt(value: u128) -> u128 {
 pub struct AddTokenLiquity<'info> {
     pub liquidity_provider: Signer<'info>,
 
+    /// CHECK: This PDA acts as the authority for vaults and LP mint.
+    /// It’s derived from seeds, so we know the address is valid.
+    /// No further checks are needed.
+
     #[account(
             seeds = [b"authority", token_a_mint.key().as_ref(), token_b_mint.key().as_ref()],
             bump
@@ -194,14 +198,14 @@ pub struct AddTokenLiquity<'info> {
     pub token_program: Program<'info, Token>,
 }
 
-#[account]
-pub struct AMMPool {
-    pub mint_a: Pubkey,
-    pub mint_b: Pubkey,
-    pub vault_a: Pubkey,
-    pub vault_b: Pubkey,
-    pub lp_mint: Pubkey,
-    pub pool_authority: Pubkey,
-    pub total_lp_issued: u64,
-    pub bump: u8,
-}
+// #[account]
+// pub struct AMMPool {
+//     pub mint_a: Pubkey,
+//     pub mint_b: Pubkey,
+//     pub vault_a: Pubkey,
+//     pub vault_b: Pubkey,
+//     pub lp_mint: Pubkey,
+//     pub pool_authority: Pubkey,
+//     pub total_lp_issued: u64,
+//     pub bump: u8,
+// }
