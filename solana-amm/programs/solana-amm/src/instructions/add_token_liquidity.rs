@@ -145,7 +145,10 @@ pub struct AddTokenLiquity<'info> {
         )]
     pub token_b_account: Account<'info, TokenAccount>,
 
+    #[account()]
     pub token_a_mint: Account<'info, Mint>,
+
+    #[account()]
     pub token_b_mint: Account<'info, Mint>,
 
     #[account(

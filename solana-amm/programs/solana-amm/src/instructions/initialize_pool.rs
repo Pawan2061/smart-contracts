@@ -44,6 +44,8 @@ pub struct InitPool<'info> {
     #[account()]
     pub token_b_mint: Account<'info, Mint>,
 
+
+   
    #[account(
         init,
         payer = payer,
@@ -63,11 +65,6 @@ pub struct InitPool<'info> {
         token::authority = authority
     )]
     pub vault_b: Account<'info, TokenAccount>,
-
-
-
-
-
 
 
     #[account(
@@ -92,6 +89,7 @@ pub struct InitPool<'info> {
         token_b_mint.key().as_ref()],
         bump)]
     pub amm_pool: Account<'info, AMMPool>,
+
 
 
     pub system_program: Program<'info,System>,

@@ -7,12 +7,10 @@ pub fn swap_token(
     ctx: Context<SwapTokenContext>,
     amount_in: u64,
     min_amount_out: u64,
-    is_a_to_b: bool, // true if swapping A → B, false if B → A
+    is_a_to_b: bool,  
 ) -> Result<()> {
-    // 1️⃣ Validate input
     require!(amount_in > 0, SOLAMMERROR::ZeroAmount);
 
-    // 2️⃣ Determine which vaults and user accounts are input/output
     let (vault_in, vault_out, user_in, user_out) = if is_a_to_b {
         (
             &ctx.accounts.vault_a,
@@ -29,8 +27,7 @@ pub fn swap_token(
         )
     };
 
-    // 3️⃣ Calculate output using constant product formula
-    // dy = (y * dx) / (x + dx)
+   
     let amount_out = vault_out
         .amount
         .checked_mul(amount_in)
@@ -39,7 +36,6 @@ pub fn swap_token(
 
     require!(amount_out >= min_amount_out, SOLAMMERROR::SlippageExceeded);
 
-    // 4️⃣ Transfer input tokens from user to vault
     let cpi_accounts_in = Transfer {
         from: user_in.to_account_info(),
         to: vault_in.to_account_info(),
@@ -48,7 +44,6 @@ pub fn swap_token(
     let cpi_program = ctx.accounts.token_program.to_account_info();
     token::transfer(CpiContext::new(cpi_program.clone(), cpi_accounts_in), amount_in)?;
 
-    // 5️⃣ Transfer output tokens from vault to user using PDA signer
 
     let token_a_key=ctx.accounts.token_mint_a.key();
         let token_b_key=ctx.accounts.token_mint_b.key();

@@ -33,8 +33,8 @@ pub mod solana_amm {
         Ok(())
     }
 
-    pub fn swap(ctx: Context<Initialize>) -> Result<()> {
-        msg!("swapping tokens");
+    pub fn swap(ctx: Context<WithdrawLiquidity>, lp_amount: u64) -> Result<()> {
+        instructions::withdraw_liquidity(ctx, lp_amount);
         Ok(())
     }
 }
