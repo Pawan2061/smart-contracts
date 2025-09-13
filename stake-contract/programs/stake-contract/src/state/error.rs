@@ -8,4 +8,13 @@ pub enum StakingError {
 
     #[msg("Overflow of the tokens")]
     Overflow,
+
+    #[msg("Insufficient state of the stake")]
+    InsufficientStake,
+
+    #[msg("Underflow of the stake")]
+    Underflow,
+
+    #[msg("Insufficient points")]
+    InsufficientPoints,
 }
