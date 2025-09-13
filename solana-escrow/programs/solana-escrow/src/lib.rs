@@ -23,16 +23,14 @@ pub mod solana_escrow {
         Ok(())
     }
 
-    pub fn exchange(ctx: Context<Initialize>) -> Result<()> {
-        msg!("wokring till now");
+    pub fn exchange(ctx: Context<ExchangeToken>) -> Result<()> {
+        instructions::exchange(ctx);
         Ok(())
     }
 
-    pub fn cancel_exchange(ctx: Context<Initialize>) -> Result<()> {
-        msg!("wokring");
+    pub fn cancel_exchange(ctx: Context<CancelEscrow>) -> Result<()> {
+        instructions::cancel_escrow(ctx);
+
         Ok(())
     }
 }
-
-#[derive(Accounts)]
-pub struct Initialize {}
