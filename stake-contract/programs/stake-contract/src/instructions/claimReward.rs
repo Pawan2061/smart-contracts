@@ -52,6 +52,8 @@ pub struct ClaimReward<'info> {
     #[account(mut)]
     pub reward_mint: Account<'info, Mint>,
 
+    /// CHECK
+
     #[account(
         seeds = [b"mint_authority"],
         bump
