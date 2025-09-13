@@ -64,6 +64,8 @@ pub struct UnstakeToken<'info> {
     )]
     pub vault: Account<'info, TokenAccount>,
 
+    /// CHECK
+
     #[account(
         seeds = [b"vault", user.key().as_ref()],
         bump
