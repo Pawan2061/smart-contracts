@@ -10,4 +10,9 @@ pub enum CLMMERROR {
 
     #[msg("Invalid tick range")]
     InvalidTickRange,
+
+    #[msg("No liquidity available")]
+    NoLiquidity,
+    #[msg("Math overflow")]
+    MathOverflow,
 }
