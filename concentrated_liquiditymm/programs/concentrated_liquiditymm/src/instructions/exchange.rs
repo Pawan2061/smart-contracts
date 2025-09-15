@@ -134,6 +134,8 @@ pub struct Exchange<'info> {
     #[account(mut, seeds = [b"tick", pool.key().as_ref(), &i32::MAX.to_le_bytes()], bump)]
     pub tick_upper: Account<'info, Tick>,
 
+    /// CHECK: This PDA is derived using seeds [b"authority", mint_a, mint_b].
+    /// We don’t need to deserialize or enforce ownership, just use it as a PDA signer.
     #[account(seeds = [b"authority", mint_a.key().as_ref(), mint_b.key().as_ref()], bump)]
     pub authority: UncheckedAccount<'info>,
 

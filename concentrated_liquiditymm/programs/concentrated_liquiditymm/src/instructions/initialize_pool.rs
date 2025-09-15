@@ -37,9 +37,6 @@ CLMMERROR::SameTokenMint
     pool.current_tick=current_tick;
     pool.active_liquidity=0;
 
-    
-
-
     Ok(())
 }
 
@@ -48,6 +45,8 @@ pub struct InitializePool<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
 
+    /// CHECK: This PDA is derived using seeds [b"authority", mint_a, mint_b].
+    /// We don’t need to deserialize or enforce ownership, just use it as a PDA signer.
     #[account(
         seeds = [b"authority", mint_a.key().as_ref(), mint_b.key().as_ref()],
         bump
