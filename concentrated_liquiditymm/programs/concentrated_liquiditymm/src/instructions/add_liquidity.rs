@@ -3,16 +3,8 @@ use crate::state::pool::Pool;
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount, Transfer};
 
-/// Helper function: integer square root of u128
-fn integer_sqrt(value: u128) -> u128 {
-    let mut z = value;
-    let mut x = value / 2 + 1;
-    while x < z {
-        z = x;
-        x = (value / x + x) / 2;
-    }
-    z
-}
+use crate::state::tick::Tick;
+use crate::utils::*;
 
 pub fn add_liquidity(
     ctx: Context<AddLiquidity>,
@@ -23,24 +15,20 @@ pub fn add_liquidity(
 ) -> Result<()> {
     let mut pool = ctx.accounts.pool.load_mut()?;
 
-    // Validate amounts and ticks
     require!(amount_a > 0 && amount_b > 0, CLMMERROR::InvalidAmount);
     require!(tick_lower_val < tick_upper_val, CLMMERROR::InvalidTickRange);
 
-    // 1️⃣ Update tick accounts
-    let liquidity_to_add = (amount_a as u128).min(amount_b as u128); // simplified liquidity formula
+    let liquidity_to_add = (amount_a as u128).min(amount_b as u128);
     ctx.accounts.tick_lower.liquidity_net += liquidity_to_add as i128;
     ctx.accounts.tick_lower.liquidity_gross += liquidity_to_add;
 
     ctx.accounts.tick_upper.liquidity_net -= liquidity_to_add as i128;
     ctx.accounts.tick_upper.liquidity_gross += liquidity_to_add;
 
-    // 2️⃣ Update pool active liquidity if current_tick is within range
     if pool.current_tick >= tick_lower_val && pool.current_tick < tick_upper_val {
         pool.active_liquidity += liquidity_to_add;
     }
 
-    // 3️⃣ Transfer tokens from user to vaults
     let cpi_program = ctx.accounts.token_program.to_account_info();
     let cpi_accounts_a = Transfer {
         from: ctx.accounts.token_account_a.to_account_info(),
@@ -62,13 +50,10 @@ pub fn add_liquidity(
         amount_b,
     )?;
 
-    // 4️⃣ Mint LP tokens (full-range approximation for simplicity)
-    let seeds: &[&[u8]] = &[
-        b"authority",
-        ctx.accounts.mint_a.key().as_ref(),
-        ctx.accounts.mint_b.key().as_ref(),
-        &[pool.bump],
-    ];
+    let mint_a = ctx.accounts.mint_a.key();
+
+    let mint_b = ctx.accounts.mint_b.key();
+    let seeds: &[&[u8]] = &[b"authority", mint_a.as_ref(), mint_b.as_ref(), &[pool.bump]];
     let signer: &[&[&[u8]]] = &[seeds];
 
     let lp_to_mint = if pool.total_lp_issued == 0 {
@@ -91,13 +76,14 @@ pub fn add_liquidity(
         lp_to_mint,
     )?;
 
-    // 5️⃣ Update pool state
     pool.total_lp_issued += lp_to_mint;
 
     Ok(())
 }
 
 #[derive(Accounts)]
+#[instruction(tick_lower_val: i32, tick_upper_val: i32)]
+
 pub struct AddLiquidity<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
@@ -123,11 +109,10 @@ pub struct AddLiquidity<'info> {
     #[account(mut)]
     pub user_lp: Account<'info, TokenAccount>,
 
-    // Tick accounts
-    #[account(mut, seeds = [b"tick", pool.key().as_ref(), &tick_lower.to_le_bytes()], bump)]
+    #[account(mut, seeds = [b"tick", pool.key().as_ref(), &tick_lower_val.to_le_bytes()], bump)]
     pub tick_lower: Account<'info, Tick>,
 
-    #[account(mut, seeds = [b"tick", pool.key().as_ref(), &tick_upper.to_le_bytes()], bump)]
+    #[account(mut, seeds = [b"tick", pool.key().as_ref(), &tick_upper_val.to_le_bytes()], bump)]
     pub tick_upper: Account<'info, Tick>,
 
     #[account(seeds = [b"authority", mint_a.key().as_ref(), mint_b.key().as_ref()], bump)]

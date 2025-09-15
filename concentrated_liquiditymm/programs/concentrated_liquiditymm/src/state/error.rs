@@ -7,4 +7,7 @@ pub enum CLMMERROR {
 
     #[msg("Invalid amount of tokens available")]
     InvalidAmount,
+
+    #[msg("Invalid tick range")]
+    InvalidTickRange,
 }
